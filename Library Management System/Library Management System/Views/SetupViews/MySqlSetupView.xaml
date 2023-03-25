@@ -1,0 +1,55 @@
+﻿<Page
+    x:Class="Library_Management_System.Views.SetupViews.MySqlSetupView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:Library_Management_System.Views.SetupViews"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center"
+    mc:Ignorable="d">
+    <StackPanel VerticalAlignment="Center" Spacing="20">
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Style="{StaticResource DisplayTextBlockStyle}"
+            Text="Let's Create A New Project In Just A Minute!" />
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="18"
+            FontWeight="Light"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Text="Connect to MySql Server" />
+
+        <StackPanel MaxWidth="400" Spacing="15">
+            <Grid ColumnSpacing="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <TextBox PlaceholderText="Host" Text="{x:Bind MySqlSetupViewModel.Host, Mode=TwoWay}" />
+                <NumberBox
+                    Grid.Column="1"
+                    MinWidth="120"
+                    MaxWidth="120"
+                    PlaceholderText="Port"
+                    SpinButtonPlacementMode="Compact"
+                    Text="{x:Bind MySqlSetupViewModel.Port, Mode=TwoWay, FallbackValue=0, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <TextBox PlaceholderText="Project Name" Text="{x:Bind MySqlSetupViewModel.ProjectName, Mode=TwoWay}" />
+            <TextBox PlaceholderText="Database" Text="{x:Bind MySqlSetupViewModel.DatabaseName, Mode=TwoWay}" />
+            <TextBox PlaceholderText="Username" Text="{x:Bind MySqlSetupViewModel.Username, Mode=TwoWay}" />
+            <PasswordBox x:Name="Password" PlaceholderText="Password" />
+        </StackPanel>
+        <Button
+            Margin="0,40,0,0"
+            Padding="60,10"
+            HorizontalAlignment="Center"
+            Command="{x:Bind MySqlSetupViewModel.GoToAccountSetupViewCommand}"
+            CommandParameter="{Binding ElementName=Password}"
+            Content="Continue"
+            FontWeight="Medium" />
+    </StackPanel>
+
+</Page>
