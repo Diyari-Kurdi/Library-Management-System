@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="using:Library_Management_System.Views.MainViews"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="using:System"
     mc:Ignorable="d">
     <StackPanel
         Grid.Row="1"
@@ -34,10 +35,11 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock VerticalAlignment="Center" Text="Birthday : " />
-            <DatePicker
+            <CalendarDatePicker
+                x:Name="Calendar"
                 Grid.Column="1"
                 HorizontalAlignment="Stretch"
-                SelectedDate="{x:Bind AddAuthorViewModel.Author.Birthday, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                Date="{x:Bind AddAuthorViewModel.Author.Birthday, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         </Grid>
         <TextBox
             MaxHeight="200"

@@ -1,49 +1,29 @@
 ﻿using Dapper;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
-using MySqlConnector;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data.SQLite;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace Library_Management_System.Services;
 
-internal static partial class MySqlService
+public static class SQLiteService
 {
     #region MySql
-
-    private static readonly string DatabaseName = ApplicationSettings.Settings.DatabaseName;
-    private static readonly string ConnectionString = ApplicationSettings.Settings.ConnectionString;
+    private static readonly string ConnectionString = @$"Data Source={Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "Library.db")}";
 
     #endregion
 
     #region Check
-
-    /// <summary>
-    /// Check if the connection is valid.
-    /// </summary>
-    /// <param name="server"></param>
-    /// <returns><see cref="ResultsModel{T}"/></returns>
-    public static async Task<bool> IsConnectionValid(ServerModel server, CancellationToken cancellationToken)
-    {
-        using MySqlConnection con = new($"{server.ConnectionString}Password={server.RootPassword.Password}");
-        try
-        {
-            await con.OpenAsync(cancellationToken);
-            await con.PingAsync(cancellationToken);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
 
     /// <summary>
     /// Check If Value Exist
@@ -55,10 +35,10 @@ internal static partial class MySqlService
     /// <returns></returns>
     public static async Task<object> IsExist(Table table, string ColumnName, object Value, CancellationToken cancellationToken)
     {
-        using MySqlConnection connection = new(ConnectionString);
+        using SQLiteConnection connection = new(ConnectionString);
         try
         {
-            var result = await connection.QueryAsync<int>(new($"SELECT COUNT(*) FROM `{DatabaseName}`.`{table}` WHERE `{ColumnName}`=@value", new { value = Value },
+            var result = await connection.QueryAsync<int>(new($"SELECT COUNT(*) FROM `{table}` WHERE `{ColumnName}`=@value", new { value = Value },
                 cancellationToken: cancellationToken));
             if (result.First() > 0)
             {
@@ -66,7 +46,7 @@ internal static partial class MySqlService
             };
             return false;
         }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             throw ex;
         }
@@ -81,7 +61,7 @@ internal static partial class MySqlService
     /// <returns>True if the value exists.</returns>
     public static async Task<bool> IsExist(Table table, CommandOperationModel[] operationModels, InfoBar? infoBar, CancellationToken cancellationToken)
     {
-        using MySqlConnection connection = new(ConnectionString);
+        using SQLiteConnection connection = new(ConnectionString);
         try
         {
             string cols = string.Empty;
@@ -97,7 +77,7 @@ internal static partial class MySqlService
                     cols += logicalOperator;
                 }
 
-                int result = await connection.QuerySingleAsync<int>(new($"SELECT COUNT(*) FROM `{DatabaseName}`.`{table}` WHERE {cols};", cancellationToken: cancellationToken));
+                int result = await connection.QuerySingleAsync<int>(new($"SELECT COUNT(*) FROM `{table}` WHERE {cols};", cancellationToken: cancellationToken));
                 if (result > 0)
                 {
                     return true;
@@ -105,7 +85,7 @@ internal static partial class MySqlService
             }
             return false;
         }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             infoBar?.Show(ex.Message);
             return false;
@@ -114,11 +94,11 @@ internal static partial class MySqlService
 
     public static async Task<bool> Login(Table table, string? Username, string Password, InfoBar infoBar, CancellationToken cancellationToken)
     {
-        using MySqlConnection connection = new(ConnectionString);
+        using SQLiteConnection connection = new(ConnectionString);
         try
         {
             string cols = string.Empty;
-            int result = await connection.QuerySingleAsync<int>(new($"SELECT COUNT(*) FROM `{DatabaseName}`.`{table}` WHERE `Username` = @username AND `Password` = @password",
+            int result = await connection.QuerySingleAsync<int>(new($"SELECT COUNT(*) FROM `{table}` WHERE `Username` = @username AND `Password` = @password",
                 new { username = Username, password = Password }, cancellationToken: cancellationToken));
             if (result > 0)
             {
@@ -133,7 +113,7 @@ internal static partial class MySqlService
             infoBar.Show($"Invalid Username or Password.");
             return false;
         }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             infoBar.Show(ex.Message);
             return false;
@@ -162,15 +142,15 @@ internal static partial class MySqlService
     public static async Task<IEnumerable<T>?> SelectAsync<T>(CancellationToken cancellationToken)
         where T : ITableModel
     {
-        using MySqlConnection connection = new(ConnectionString);
+        using SQLiteConnection connection = new(ConnectionString);
         try
         {
             ITableModel? model = Activator.CreateInstance(typeof(T)) as ITableModel;
-            var sql = $"SELECT * FROM `{DatabaseName}`.`{model?.GetTableName()}`";
+            var sql = $"SELECT * FROM `{model?.GetTableName()}`";
             var query = await connection.QueryAsync<T>(new CommandDefinition(sql, cancellationToken: cancellationToken));
             return query;
         }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             throw ex;
         }
@@ -194,7 +174,7 @@ internal static partial class MySqlService
         else
             cancellationToken = CancellationToken.None;
 
-        using MySqlConnection connection = new(ConnectionString);
+        using SQLiteConnection connection = new(ConnectionString);
         try
         {
             ITableModel? model = Activator.CreateInstance(typeof(T)) as ITableModel;
@@ -222,12 +202,12 @@ internal static partial class MySqlService
                 }
 
                 SelectedColumns = SelectedColumns.TrimEnd(',');
-                var x = $"SELECT {SelectedColumns} FROM `{DatabaseName}`.`{model!.GetTableName()}` WHERE {cols};";
-                return await connection.QuerySingleAsync<T>(new($"SELECT {SelectedColumns} FROM `{DatabaseName}`.`{model!.GetTableName()}` WHERE {cols};", cancellationToken: cancellationToken));
+                var x = $"SELECT {SelectedColumns} FROM `{model!.GetTableName()}` WHERE {cols};";
+                return await connection.QuerySingleAsync<T>(new($"SELECT {SelectedColumns} FROM `{model!.GetTableName()}` WHERE {cols};", cancellationToken: cancellationToken));
             }
             return default;
         }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             infoBar?.Show(ex.Message);
             return default;
@@ -237,10 +217,10 @@ internal static partial class MySqlService
     {
         try
         {
-            using MySqlConnection connection = new(ConnectionString);
-            string sql = $"SELECT _first.*, _second.*, _third.* FROM `{DatabaseName}`.`{Table.books}` _first " +
-                $"LEFT JOIN `{DatabaseName}`.`{Table.authors}` _second ON _first.AuthorID = _second.ID " +
-                $"LEFT JOIN `{DatabaseName}`.`{Table.categories}` _third ON _first.GenreID = _third.ID;";
+            using SQLiteConnection connection = new(ConnectionString);
+            string sql = $"SELECT _first.*, _second.*, _third.* FROM `{Table.books}` _first " +
+                $"LEFT JOIN `{Table.authors}` _second ON _first.AuthorID = _second.ID " +
+                $"LEFT JOIN `{Table.categories}` _third ON _first.GenreID = _third.ID;";
 
             var results = await connection.QueryAsync<FullBookModel, AuthorModel, CategoryModel, FullBookModel>
                 (sql, (first, second, third) =>
@@ -251,7 +231,7 @@ internal static partial class MySqlService
                 }, splitOn: "ID");
             return results;
         }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             throw ex;
         }
@@ -270,8 +250,8 @@ internal static partial class MySqlService
     {
         try
         {
-            using MySqlConnection connection = new(ConnectionString);
-            string sql = $"SELECT * FROM `{DatabaseName}`.`{Table.authors}` ;";
+            using SQLiteConnection connection = new(ConnectionString);
+            string sql = $"SELECT * FROM `{Table.authors}` ;";
             var authors = await SelectAsync<AuthorModel>(CancellationToken.None);
             var books = await SelectFullBooksAsync();
 
@@ -282,7 +262,7 @@ internal static partial class MySqlService
                 }
             return authors;
         }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             throw ex;
         }
@@ -352,7 +332,14 @@ internal static partial class MySqlService
             {
                 if (property.Name != "ID" && property.CanWrite && property.PropertyType != typeof(ImageSource) && property.PropertyType != typeof(ObservableCollection<FullBookModel>))
                 {
-                    parameters.Add($"@{property.Name}", property.GetValue(type));
+                    if (property.GetValue(type) is DateTimeOffset dateTimeOffset)
+                    {
+                        parameters.Add($"@{property.Name}", dateTimeOffset.Date.ToString("yyyy-MM-dd"));
+                    }
+                    else
+                    {
+                        parameters.Add($"@{property.Name}", property.GetValue(type));
+                    }
                     columnsName.Add(property.Name);
                     values.Add($"@{property.Name}");
                 }
@@ -366,15 +353,15 @@ internal static partial class MySqlService
         }
         vals = vals.Remove(vals.Length - 1, 1);
 
-        using MySqlConnection connection = new(ConnectionString);
+        using SQLiteConnection connection = new(ConnectionString);
         try
         {
-            var sql = $"INSERT INTO `{DatabaseName}`.`{type.GetTableName()}` ({string.Join(',', columnsName)}) VALUES{vals};";
+            var sql = $"INSERT INTO `{type.GetTableName()}` ({string.Join(',', columnsName)}) VALUES{vals};";
             var AffectedRows = await connection.ExecuteAsync(new(sql, parameters, cancellationToken: cT));
             return AffectedRows;
         }
         catch (OperationCanceledException) { return 0; }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             infoBar?.Show(ex.Message);
             return 0;
@@ -389,9 +376,9 @@ internal static partial class MySqlService
     {
         try
         {
-            using MySqlConnection connection = new(ConnectionString);
-            var sql = $"DELETE FROM `{DatabaseName}`.`{Record.GetTableName()}` WHERE `{conditionColumn}`=@{conditionColumn} ;";
-            var AffectedRows = await connection.ExecuteAsync(new($"DELETE FROM `{DatabaseName}`.`{Record.GetTableName()}` WHERE `{conditionColumn}`=@{conditionColumn};", Record, cancellationToken: cancellationToken));
+            using SQLiteConnection connection = new(ConnectionString);
+            var sql = $"DELETE FROM `{Record.GetTableName()}` WHERE `{conditionColumn}`=@{conditionColumn} ;";
+            var AffectedRows = await connection.ExecuteAsync(new($"DELETE FROM `{Record.GetTableName()}` WHERE `{conditionColumn}`=@{conditionColumn};", Record, cancellationToken: cancellationToken));
             return AffectedRows;
         }
         catch (Exception ex)
@@ -413,7 +400,7 @@ internal static partial class MySqlService
     {
         try
         {
-            using MySqlConnection connection = new(ConnectionString);
+            using SQLiteConnection connection = new(ConnectionString);
             var Properties = newRecord.GetType().GetProperties().Where(p => p.CanWrite && p.Name != "ID" && p.PropertyType != typeof(ImageSource) && p.PropertyType != typeof(ObservableCollection<FullBookModel>));
             string changes = string.Empty;
             foreach (var property in Properties)
@@ -424,11 +411,11 @@ internal static partial class MySqlService
                 changes += $"`{property.Name}` = '{newValue}',";
             }
             changes = changes.TrimEnd(',');
-            var sql = $"UPDATE `{DatabaseName}`.`{newRecord.GetTableName()}` SET {changes} WHERE `ID` = '{oldRecordID}';";
+            var sql = $"UPDATE `{newRecord.GetTableName()}` SET {changes} WHERE `ID` = '{oldRecordID}';";
             var AffectedRows = await connection.ExecuteAsync(new(sql, cancellationToken: cancellationToken));
             return AffectedRows;
         }
-        catch (MySqlException ex)
+        catch (SQLiteException ex)
         {
             infoBar?.Show(ex.Message);
             return 0;

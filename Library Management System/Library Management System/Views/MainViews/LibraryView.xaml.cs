@@ -18,6 +18,10 @@ namespace Library_Management_System.Views.MainViews
             _ = Player.PlayAsync(0, 1, true);
             this.NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
             LibraryViewModel.View = this;
+            Loaded += async (sender, e) =>
+            {
+                await LibraryViewModel.GetData();
+            };
         }
 
         private async void LibraryView_Loaded(object sender, RoutedEventArgs e)

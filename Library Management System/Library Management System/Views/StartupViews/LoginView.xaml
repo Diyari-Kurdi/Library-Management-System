@@ -1,0 +1,51 @@
+<Page
+    x:Class="Library_Management_System.Views.StartupViews.LoginView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="using:Library_Management_System.Views.StartupViews"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <StackPanel VerticalAlignment="Center" Spacing="20">
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Style="{StaticResource DisplayTextBlockStyle}"
+            Text="Welcome Back!"
+            TextAlignment="Center" />
+        <TextBlock
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            FontSize="18"
+            FontWeight="Light"
+            Style="{StaticResource CaptionTextBlockStyle}"
+            Text="Login to your account." />
+        <StackPanel MaxWidth="400" Spacing="20">
+            <Border
+                Width="180"
+                Height="180"
+                CornerRadius="90">
+                <Image Source="{x:Bind LoginViewModel.ProfilePicture, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Stretch="UniformToFill" />
+            </Border>
+            <TextBox PlaceholderText="Username" Text="{x:Bind LoginViewModel.Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <PasswordBox Password="{x:Bind LoginViewModel.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" PlaceholderText="Password" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Button
+                    Padding="40,10"
+                    Command="{x:Bind LoginViewModel.LoginCommand}"
+                    Content="Login" />
+                <HyperlinkButton
+                    Grid.Column="1"
+                    Command="{x:Bind LoginViewModel.GoToRegisterCommand}"
+                    Content="Create new account" />
+            </Grid>
+
+        </StackPanel>
+
+    </StackPanel>
+</Page>

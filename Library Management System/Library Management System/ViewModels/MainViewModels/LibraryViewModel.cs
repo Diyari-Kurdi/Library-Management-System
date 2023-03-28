@@ -38,10 +38,10 @@ public partial class LibraryViewModel : ObservableObject
 
     public async Task GetData()
     {
-        var books = await MySqlService.SelectFullBooksAsync();
+        var books = await SQLiteService.SelectFullBooksAsync();
         Books = new(books);
-        Authors = await MySqlService.SelectAsync<AuthorModel>(CancellationToken.None);
-        Categories = await MySqlService.SelectAsync<CategoryModel>(CancellationToken.None);
+        Authors = await SQLiteService.SelectAsync<AuthorModel>(CancellationToken.None);
+        Categories = await SQLiteService.SelectAsync<CategoryModel>(CancellationToken.None);
         Books.CollectionChanged += (sender, e) =>
         {
             OnPropertyChanged(nameof(Books));
@@ -51,11 +51,11 @@ public partial class LibraryViewModel : ObservableObject
                 AnyBooks = Visibility.Collapsed;
         };
     }
-
+    AddBookViewModel ViewModel { get; set; } = null!;
     [RelayCommand]
     private async Task AddNewBook()
     {
-        var ViewModel = App.AppHost.Services.GetRequiredService<AddBookViewModel>();
+        ViewModel = App.AppHost.Services.GetRequiredService<AddBookViewModel>();
         ContentDialog dialog = new()
         {
             XamlRoot = View.XamlRoot,
@@ -73,7 +73,7 @@ public partial class LibraryViewModel : ObservableObject
         dialog.Closed += Dialog_Closed;
         await dialog.ShowAsync();
     }
-
+    
     private async void Dialog_Closed(ContentDialog sender, ContentDialogClosedEventArgs args)
     {
         if (args.Result == ContentDialogResult.Primary)
@@ -105,8 +105,11 @@ public partial class LibraryViewModel : ObservableObject
                             property.SetValue(book, propertyValue);
                         }
                     }
-                    if (await MySqlService.InsertAsync(book, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    if (await SQLiteService.InsertAsync(book, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    {
                         Books.Add(newBook);
+                        ViewModel.Book = new();
+                    }
                 }
                 catch { }
             }
@@ -116,7 +119,7 @@ public partial class LibraryViewModel : ObservableObject
     [RelayCommand]
     private async Task Delete(int id)
     {
-        if (await MySqlService.DeleteAsync(new BookModel() { ID = id }, "ID", InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+        if (await SQLiteService.DeleteAsync(new BookModel() { ID = id }, "ID", InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
             Books.Remove(Books.Single(b => b.ID == id));
     }
 
@@ -127,7 +130,7 @@ public partial class LibraryViewModel : ObservableObject
         {
             FullBookModel selectedBook = Books.First(b => b.ID == id);
            
-            var ViewModel = App.AppHost.Services.GetRequiredService<AddBookViewModel>();
+            ViewModel = App.AppHost.Services.GetRequiredService<AddBookViewModel>();
             ViewModel.Book = selectedBook;
             ContentDialog dialog = new()
             {
@@ -182,10 +185,11 @@ public partial class LibraryViewModel : ObservableObject
                             property.SetValue(book, propertyValue);
                         }
                     }
-                    if (await MySqlService.UpdateAsync(_recordToUpdate, book, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    if (await SQLiteService.UpdateAsync(_recordToUpdate, book, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
                     {
                         Books.Remove(Books.First(b => b.ID == _recordToUpdate));
                         Books.Add(newBook);
+                        ViewModel.Book = new();
                     }
                 }
                 catch { }

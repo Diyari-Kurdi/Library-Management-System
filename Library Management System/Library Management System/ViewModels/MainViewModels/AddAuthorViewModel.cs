@@ -43,7 +43,7 @@ public partial class AddAuthorViewModel : ObservableObject
         var pickedFile = await picker.PickSingleFileAsync();
         if (pickedFile != null)
         {
-            Author.Picture = pickedFile.Path.Replace(@"\",@"/");
+            Author.Picture = await pickedFile.AddFile();
         }
     }
 }

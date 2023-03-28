@@ -11,16 +11,12 @@ public partial class App : Application
     {
         AppHost = Host.CreateDefaultBuilder().ConfigureServices((contexts, services) =>
         {
-            services.AddSingleton<SetupWindow>();
-            services.AddSingleton<SetupViewModel>();
+            services.AddSingleton<StartupWindow>();
 
-            services.AddSingleton<MySqlSetupView>();
-            services.AddSingleton<MySqlSetupViewModel>();
+            services.AddTransient<RegisterView>();
+            services.AddSingleton<RegisterViewModel>();
 
-            services.AddSingleton<AccountSetupView>();
-            services.AddSingleton<AccountSetupViewModel>();
-
-            services.AddSingleton<LoginWindow>();
+            services.AddTransient<LoginView>();
             services.AddSingleton<LoginViewModel>();
 
             services.AddSingleton<MainWindow>();
@@ -49,23 +45,14 @@ public partial class App : Application
         this.InitializeComponent();
     }
     public static Window m_window = null!;
-    protected override async void OnLaunched(LaunchActivatedEventArgs args)
+    protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-        var settings = await ApplicationSettings.LoadSettings();
-        if (settings != null)
-        {
-            ApplicationSettings.Settings = settings;
-        }
-        if (ApplicationSettings.Settings.IsFirstTime)
-            m_window = AppHost.Services.GetRequiredService<SetupWindow>();
-        else
-        {
 #if !DEBUG
-            m_window = AppHost.Services.GetRequiredService<MainWindow>();
+        m_window = AppHost.Services.GetRequiredService<MainWindow>();
 #else
-            m_window = AppHost.Services.GetRequiredService<LoginWindow>();
+        m_window = AppHost.Services.GetRequiredService<StartupWindow>();
 #endif
-        }
+
 
         m_window.Activate();
     }

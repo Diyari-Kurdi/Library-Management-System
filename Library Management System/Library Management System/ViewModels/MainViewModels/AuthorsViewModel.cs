@@ -24,14 +24,15 @@ public partial class AuthorsViewModel : ObservableObject
 
     private async Task GetData()
     {
-        var authors = await MySqlService.SelectAuthorsAsync();
+        var authors = await SQLiteService.SelectAuthorsAsync();
         if (authors != null)
             Authors = new(authors);
     }
+    AddAuthorViewModel ViewModel { get; set; } = null!;
     [RelayCommand]
     private async Task AddNewAuthor()
     {
-        var ViewModel = App.AppHost.Services.GetRequiredService<AddAuthorViewModel>();
+        ViewModel = App.AppHost.Services.GetRequiredService<AddAuthorViewModel>();
         ContentDialog dialog = new()
         {
             XamlRoot = View.XamlRoot,
@@ -57,8 +58,11 @@ public partial class AuthorsViewModel : ObservableObject
             {
                 try
                 {
-                    if (await MySqlService.InsertAsync(newAuthor, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    if (await SQLiteService.InsertAsync(newAuthor, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    {
                         Authors.Add(newAuthor);
+                        ViewModel.Author = new();
+                    }
                 }
                 catch { }
             }
@@ -72,7 +76,7 @@ public partial class AuthorsViewModel : ObservableObject
         if (SelectedAuthor != null)
         {
             var id = SelectedAuthor.ID;
-            if (await MySqlService.DeleteAsync(new AuthorModel() { ID = id }, "ID", InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+            if (await SQLiteService.DeleteAsync(new AuthorModel() { ID = id }, "ID", InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
                 Authors.Remove(Authors.Single(b => b.ID == id));
         }
     }
@@ -85,7 +89,7 @@ public partial class AuthorsViewModel : ObservableObject
             var id = SelectedAuthor.ID;
             try
             {
-                var ViewModel = App.AppHost.Services.GetRequiredService<AddAuthorViewModel>();
+                ViewModel = App.AppHost.Services.GetRequiredService<AddAuthorViewModel>();
                 ViewModel.Author = SelectedAuthor;
                 ContentDialog dialog = new()
                 {
@@ -118,10 +122,11 @@ public partial class AuthorsViewModel : ObservableObject
             {
                 try
                 {
-                    if (await MySqlService.UpdateAsync(_recordToUpdate, newAuthor, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    if (await SQLiteService.UpdateAsync(_recordToUpdate, newAuthor, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
                     {
                         Authors.Remove(Authors.First(b => b.ID == _recordToUpdate));
                         Authors.Add(newAuthor);
+                        ViewModel.Author = new();
                     }
                 }
                 catch { await GetData(); }

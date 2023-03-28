@@ -4,5 +4,6 @@ public enum MessageResult
 {
     Success,
     Failed,
-    GoBack
+    GoBack,
+    GoForward
 }

@@ -1,20 +1,22 @@
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using WinRT;
 
 namespace Library_Management_System.Views;
 
-public sealed partial class LoginWindow : Window
+public sealed partial class StartupWindow : Window,IRecipient<MessageRecord>
 {
-    public LoginViewModel LoginViewModel { get; }
-    public LoginWindow()
+    public Page CurrentContent = App.AppHost.Services.GetRequiredService<LoginView>();
+    public StartupWindow()
     {
-        LoginViewModel = App.AppHost.Services.GetRequiredService<LoginViewModel>();
         this.InitializeComponent();
         ExtendsContentIntoTitleBar = true;
         Title = "Library Management System";
         SetTitleBar(AppTitleBar);
         TrySetAcrylicBackdrop();
         InfoDeliveryService.CurrentInfoBar = infoBar;
+        WeakReferenceMessenger.Default.Register(this);
     }
 
     WindowsSystemDispatcherQueueHelper m_wsdqHelper = null!;
@@ -80,5 +82,17 @@ public sealed partial class LoginWindow : Window
                 case ElementTheme.Light: m_configurationSource.Theme = Microsoft.UI.Composition.SystemBackdrops.SystemBackdropTheme.Light; break;
                 case ElementTheme.Default: m_configurationSource.Theme = Microsoft.UI.Composition.SystemBackdrops.SystemBackdropTheme.Default; break;
             }
+    }
+
+    public void Receive(MessageRecord message)
+    {
+        if (message.MessageResult == MessageResult.GoBack)
+        {
+            StartupFrame.Navigate(typeof(LoginView));
+        }
+        else
+        {
+            StartupFrame.Navigate(typeof(RegisterView));
+        }
     }
 }

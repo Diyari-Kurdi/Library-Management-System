@@ -24,14 +24,15 @@ public partial class CategoriesViewModel : ObservableObject
 
     private async Task GetData()
     {
-        var categories = await MySqlService.SelectAsync<CategoryModel>(CancellationToken.None);
+        var categories = await SQLiteService.SelectAsync<CategoryModel>(CancellationToken.None);
         if (categories != null)
             Categories = new(categories);
     }
+    AddCategoryViewModel ViewModel { get; set; } = null!;
     [RelayCommand]
     private async Task AddNewCategory()
     {
-        var ViewModel = App.AppHost.Services.GetRequiredService<AddCategoryViewModel>();
+        ViewModel = App.AppHost.Services.GetRequiredService<AddCategoryViewModel>();
         ContentDialog dialog = new()
         {
             XamlRoot = View.XamlRoot,
@@ -57,8 +58,11 @@ public partial class CategoriesViewModel : ObservableObject
             {
                 try
                 {
-                    if (await MySqlService.InsertAsync(newCategory, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    if (await SQLiteService.InsertAsync(newCategory, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    {
                         Categories.Add(newCategory);
+                        ViewModel.Category = new();
+                    }
                 }
                 catch { }
             }
@@ -72,7 +76,7 @@ public partial class CategoriesViewModel : ObservableObject
         if (SelectedCategory != null)
         {
             var id = SelectedCategory.ID;
-            if (await MySqlService.DeleteAsync(new CategoryModel() { ID = id }, "ID", InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+            if (await SQLiteService.DeleteAsync(new CategoryModel() { ID = id }, "ID", InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
                 Categories.Remove(Categories.Single(b => b.ID == id));
         }
     }
@@ -85,7 +89,7 @@ public partial class CategoriesViewModel : ObservableObject
             var id = SelectedCategory.ID;
             try
             {
-                var ViewModel = App.AppHost.Services.GetRequiredService<AddCategoryViewModel>();
+                ViewModel = App.AppHost.Services.GetRequiredService<AddCategoryViewModel>();
                 ViewModel.Category = SelectedCategory;
                 ContentDialog dialog = new()
                 {
@@ -118,10 +122,11 @@ public partial class CategoriesViewModel : ObservableObject
             {
                 try
                 {
-                    if (await MySqlService.UpdateAsync(_recordToUpdate, newCategory, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
+                    if (await SQLiteService.UpdateAsync(_recordToUpdate, newCategory, InfoDeliveryService.CurrentInfoBar, CancellationToken.None) > 0)
                     {
                         Categories.Remove(Categories.First(b => b.ID == _recordToUpdate));
                         Categories.Add(newCategory);
+                        ViewModel.Category = new();
                     }
                 }
                 catch { await GetData(); }

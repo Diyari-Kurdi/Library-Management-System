@@ -24,8 +24,8 @@ public partial class AddBookViewModel : ObservableObject
 
     public async Task GetData()
     {
-        Authors = await MySqlService.SelectAsync<AuthorModel>(CancellationToken.None);
-        Categories = await MySqlService.SelectAsync<CategoryModel>(CancellationToken.None);
+        Authors = await SQLiteService.SelectAsync<AuthorModel>(CancellationToken.None);
+        Categories = await SQLiteService.SelectAsync<CategoryModel>(CancellationToken.None);
 
         if (Authors != null)
             if (Authors.Any(a => a.ID == Book.AuthorID))
@@ -68,7 +68,7 @@ public partial class AddBookViewModel : ObservableObject
         var pickedFile = await picker.PickSingleFileAsync();
         if (pickedFile != null)
         {
-            Book.Picture = pickedFile.Path.Replace(@"\", @"/");
+            Book.Picture = await pickedFile.AddFile();
         }
     }
 }

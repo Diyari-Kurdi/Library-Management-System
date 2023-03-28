@@ -12,22 +12,23 @@
     <SupportedOSPlatformVersion>10.0.18362.0</SupportedOSPlatformVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\Library.db" />
     <None Remove="Resources\SegMDL2.ttf" />
     <None Remove="Resources\Segoe Fluent Icons.ttf" />
     <None Remove="Views\BooksView.xaml" />
     <None Remove="Views\DashboardView.xaml" />
-    <None Remove="Views\LoginWindow.xaml" />
     <None Remove="Views\MainViews\AddAuthorView.xaml" />
     <None Remove="Views\MainViews\AddBookView.xaml" />
     <None Remove="Views\MainViews\AddCategoryView.xaml" />
     <None Remove="Views\MainViews\AuthorsView.xaml" />
     <None Remove="Views\MainViews\CategoriesView.xaml" />
     <None Remove="Views\MainViews\DetailedInfoPage.xaml" />
-    <None Remove="Views\SetupViews\AccountSetupView.xaml" />
-    <None Remove="Views\SetupViews\MySqlSetupView.xaml" />
-    <None Remove="Views\SetupWindow.xaml" />
+    <None Remove="Views\StartupViews\LoginView.xaml" />
+    <None Remove="Views\StartupViews\RegisterView.xaml" />
+    <None Remove="Views\StartupWindow.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Resources\Library.db" />
     <Content Include="Resources\SegMDL2.ttf" />
     <Content Include="Resources\Segoe Fluent Icons.ttf" />
   </ItemGroup>
@@ -39,7 +40,6 @@
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Media" Version="7.1.2" />
     <PackageReference Include="Dapper" Version="2.0.123" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0" />
@@ -48,17 +48,12 @@
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.22621.756" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
     <PackageReference Include="MySqlConnector" Version="2.2.5" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
 
   <ItemGroup>
-    <Page Update="Views\SetupWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="Views\LoginWindow.xaml">
+    <Page Update="Views\StartupWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
@@ -89,6 +84,12 @@
 
   <ItemGroup>
     <Folder Include="Resources\Styles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\StartupViews\LoginView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 
   <ItemGroup>

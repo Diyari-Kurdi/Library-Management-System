@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Library_Management_System.Models;
+﻿namespace Library_Management_System.Models;
 
 public class UserModel : ITableModel
 {
@@ -10,9 +8,4 @@ public class UserModel : ITableModel
     public string Avatar { get; set; } = string.Empty;
 
     public Table GetTableName() => Table.users;
-
-    internal int Count()
-    {
-        throw new NotImplementedException();
-    }
 }

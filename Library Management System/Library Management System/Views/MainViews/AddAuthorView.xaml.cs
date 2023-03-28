@@ -9,5 +9,6 @@ public sealed partial class AddAuthorView : Page
     {
         AddAuthorViewModel = App.AppHost.Services.GetRequiredService<AddAuthorViewModel>();
         this.InitializeComponent();
+        Calendar.MinDate = new System.DateTimeOffset(new(1400,1,1));
     }
 }

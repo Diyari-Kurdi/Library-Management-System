@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
@@ -9,10 +10,11 @@ using System.Threading.Tasks;
 
 namespace Library_Management_System.ViewModels;
 
-public partial class LoginViewModel : ObservableObject
+public partial class LoginViewModel : ObservableObject,IRecipient<MessageRecord>
 {
     private readonly Dictionary<string, string> UserProfilePictures = new();
     private readonly ImageSource DefaultPicture = _profilePicture;
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
     private string _username = string.Empty;
@@ -36,8 +38,9 @@ public partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private async Task GetPictures()
     {
-        if (await MySqlService.SelectAsync<UserModel>(CancellationToken.None) is IEnumerable<UserModel> users && users is not null)
+        if (await SQLiteService.SelectAsync<UserModel>(CancellationToken.None) is IEnumerable<UserModel> users && users is not null)
         {
+            UserProfilePictures.Clear();
             foreach (UserModel user in users)
             {
                 UserProfilePictures.Add(user.Username, user.Avatar);
@@ -49,6 +52,7 @@ public partial class LoginViewModel : ObservableObject
     public LoginViewModel()
     {
         _ = GetPictures();
+        WeakReferenceMessenger.Default.Register(this);
     }
 
     private bool CanLogin() => !(string.IsNullOrEmpty(Username) || string.IsNullOrEmpty(Password));
@@ -58,27 +62,11 @@ public partial class LoginViewModel : ObservableObject
     {
         try
         {
-            var result = await MySqlService.SelectAsync<UserModel>(
-                new CommandOperationModel[]
-                {
-                new CommandOperationModel()
-                {
-                    Column = "Username",
-                    Value = Username,
-                },
-                new CommandOperationModel()
-                {
-                    Column = "Password",
-                    Value = Password,
-                    LogicalOperator = LogicalOperators.None
-                }
-
-                });
-            if (result != null)
+            var result = await SQLiteService.Login(Table.users, Username, Password, InfoDeliveryService.CurrentInfoBar, CancellationToken.None);
+            if (result)
             {
                 Author.Username = Username;
                 Author.ProfilePicture = ProfilePicture;
-                result = null;
                 Window Desktop = App.AppHost.Services.GetRequiredService<MainWindow>();
                 Desktop.Activate();
                 App.m_window.Close();
@@ -97,5 +85,17 @@ public partial class LoginViewModel : ObservableObject
         {
             InfoDeliveryService.CurrentInfoBar.Show(ex.Message);
         }
+    }
+
+    [RelayCommand]
+    private static void GoToRegister()
+    {
+        WeakReferenceMessenger.Default.Send(new MessageRecord(MessageResult.GoForward));
+    }
+
+    public async void Receive(MessageRecord message)
+    {
+        if (message.MessageResult == MessageResult.GoBack) 
+            await GetPictures();
     }
 }

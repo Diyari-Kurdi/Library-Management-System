@@ -48,7 +48,7 @@
                             x:Name="connectedElement"
                             Height="180"
                             MaxWidth="120"
-                            VerticalAlignment="Top"
+                            VerticalAlignment="Center"
                             Source="{x:Bind ImageSource}"
                             Stretch="Fill" />
                         <StackPanel
@@ -56,9 +56,16 @@
                             Margin="8,0,0,8"
                             Spacing="4">
                             <TextBlock
-                                Margin="0,0,0,8"
+                                Margin="0,0,0,6"
                                 Style="{ThemeResource SubtitleTextBlockStyle}"
                                 Text="{x:Bind Title}" />
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock
+                                    FontWeight="Medium"
+                                    Style="{ThemeResource CaptionTextBlockStyle}"
+                                    Text="Genre:" />
+                                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind Genre}" />
+                            </StackPanel>
                             <StackPanel Orientation="Horizontal" Spacing="4">
                                 <TextBlock
                                     FontWeight="Medium"

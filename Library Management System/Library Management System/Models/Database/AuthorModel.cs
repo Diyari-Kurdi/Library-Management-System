@@ -18,7 +18,7 @@ public partial class AuthorModel : ObservableObject, ITableModel
     private string? _picture;
     [ObservableProperty]
     [DisplayFormat(DataFormatString = "dd/MM/yyyy")]
-    private DateTimeOffset _birthday;
+    private DateTimeOffset _birthday = new(new(2000, 1, 1));
     [ObservableProperty]
     private string? _birthPlace;
     [ObservableProperty]
