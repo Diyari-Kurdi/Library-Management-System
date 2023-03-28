@@ -60,7 +60,6 @@
             <SolidColorBrush x:Key="WindowCaptionBackgroundDisabled">Transparent</SolidColorBrush>
             <!--<SolidColorBrush x:Key="WindowCaptionForeground">Red</SolidColorBrush>-->
             <!--<SolidColorBrush x:Key="WindowCaptionForegroundDisabled">Pink</SolidColorBrush>-->
-            <!--  Other app resources here  -->
         </ResourceDictionary>
     </Application.Resources>
 </Application>

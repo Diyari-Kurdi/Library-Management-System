@@ -6,6 +6,7 @@ namespace Library_Management_System.Services;
 
 public static class QueryGeneratorService
 {
+    //https://github.com/Diyari-Kurdi
     public static string GetTableQuery(TableModel table)
     {
         StringBuilder sb = new();

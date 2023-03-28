@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using System.Linq;
 
 namespace Library_Management_System.Views
 {
@@ -13,6 +14,7 @@ namespace Library_Management_System.Views
             ExtendsContentIntoTitleBar = true;
             Title = "Library Management System";
             SetTitleBar(AppTitleBar);
+            NavigationView.SelectedItem = NavigationView.MenuItems.First();
         }
 
         private void NavigationView_SelectionChanged(Microsoft.UI.Xaml.Controls.NavigationView sender, Microsoft.UI.Xaml.Controls.NavigationViewSelectionChangedEventArgs args)
@@ -22,8 +24,8 @@ namespace Library_Management_System.Views
                 if (item.Tag is string tag)
                     switch (tag)
                     {
-                        case "Dashboard":
-                            NavigationView.Header = "Dashboard";
+                        case "Home":
+                            NavigationView.Header = "Home";
                             ContentFrame.Navigate(typeof(DashboardView));
                             break;
                         case "Library":
@@ -32,11 +34,11 @@ namespace Library_Management_System.Views
                             break;
                         case "Authors":
                             NavigationView.Header = "Authors";
-                            // ContentFrame.Navigate(typeof(MainViewModel));
+                            ContentFrame.Navigate(typeof(AuthorsView));
                             break;
                         case "Categories":
                             NavigationView.Header = "Categories";
-                            //ContentFrame.Navigate(typeof(MainViewModel));
+                            ContentFrame.Navigate(typeof(CategoriesView));
                             break;
                         default:
                             break;

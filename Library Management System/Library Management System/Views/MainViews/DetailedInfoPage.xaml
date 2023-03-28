@@ -15,9 +15,11 @@
 
         <Grid
             x:Name="headerBackground"
+            Padding="5"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Background="{ThemeResource SystemControlAcrylicElementBrush}">
+            Background="{ThemeResource SystemControlAcrylicElementBrush}"
+            CornerRadius="15">
             <Button
                 x:Name="GoBackButton"
                 HorizontalAlignment="Left"
@@ -35,13 +37,18 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
+            <Border
+                BorderBrush="{ThemeResource AccentFillColorSecondaryBrush}"
+                BorderThickness="1"
+                CornerRadius="5">
+                <Image
+                    x:Name="detailedImage"
+                    MaxHeight="400"
+                    VerticalAlignment="Top"
+                    Source="{x:Bind DetailedObject.ImageSource}"
+                    Stretch="Uniform" />
+            </Border>
 
-            <Image
-                x:Name="detailedImage"
-                MaxHeight="400"
-                VerticalAlignment="Top"
-                Source="{x:Bind DetailedObject.GetImageSource()}"
-                Stretch="Uniform" />
             <StackPanel
                 x:Name="coordinatedPanel"
                 Grid.Column="1"
@@ -54,85 +61,83 @@
                     Text="{x:Bind DetailedObject.Title}" />
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="Medium"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="Edition: " />
                     <TextBlock
                         Margin="5,0,0,0"
+                        FontWeight="Light"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="{x:Bind DetailedObject.Edition}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="Medium"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="Author: " />
                     <TextBlock
                         Margin="5,0,0,0"
+                        FontWeight="Light"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="{x:Bind DetailedObject.Author}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="Medium"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="Language: " />
                     <TextBlock
                         Margin="5,0,0,0"
+                        FontWeight="Light"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="{x:Bind DetailedObject.Language}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="Medium"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="Pages: " />
                     <TextBlock
                         Margin="5,0,0,0"
+                        FontWeight="Light"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="{x:Bind DetailedObject.Pages}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="Medium"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="Genre: " />
                     <TextBlock
                         Margin="5,0,0,0"
+                        FontWeight="Light"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="{x:Bind DetailedObject.Genre}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="Medium"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="Publish Date: " />
                     <TextBlock
                         Margin="5,0,0,0"
+                        FontWeight="Light"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
-                        Text="{x:Bind DetailedObject.GetFormatedPublicationDate()}" />
+                        Text="{x:Bind DetailedObject.PublishYear}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                     <TextBlock
-                        FontWeight="Bold"
-                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                        Text="ISBN: " />
-                    <TextBlock
-                        Margin="5,0,0,0"
-                        Style="{ThemeResource SubtitleTextBlockStyle}"
-                        Text="{x:Bind DetailedObject.ISBN}" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock
-                        FontWeight="Bold"
+                        FontWeight="Medium"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="Price: " />
                     <TextBlock
                         Margin="5,0,0,0"
+                        FontWeight="Light"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="{x:Bind DetailedObject.Price}" />
                     <TextBlock
                         Margin="5,0,0,0"
+                        FontWeight="Light"
                         Style="{ThemeResource SubtitleTextBlockStyle}"
                         Text="$" />
                 </StackPanel>

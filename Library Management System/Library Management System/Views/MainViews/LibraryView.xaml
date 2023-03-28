@@ -2,72 +2,119 @@
     x:Class="Library_Management_System.Views.MainViews.LibraryView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:animatedvisuals="using:Library_Management_System.AnimatedVisuals"
+    xmlns:animations="using:CommunityToolkit.WinUI.UI.Animations"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:helpers="using:Library_Management_System.Helpers"
     xmlns:local="using:Library_Management_System.Views"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:Library_Management_System.Models.Database"
     Loaded="LibraryView_Loaded"
     mc:Ignorable="d">
-    <GridView
-        x:Name="ContentGridView"
-        AllowDrop="True"
-        CanDragItems="True"
-        CanReorderItems="True"
-        FlowDirection="LeftToRight"
-        IsItemClickEnabled="True"
-        ItemClick="ContentGridView_ItemClick"
-        ItemsSource="{x:Bind BooksViewModel.Books}"
-        SelectionMode="None">
-        <GridView.ItemTemplate>
-            <DataTemplate x:DataType="models:BookModel">
-                <Grid
-                    Width="280"
-                    Margin="5"
-                    AutomationProperties.Name="{x:Bind Title}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Image
-                        x:Name="connectedElement"
-                        Height="180"
-                        MaxWidth="120"
-                        VerticalAlignment="Top"
-                        Source="{x:Bind GetImageSource()}"
-                        Stretch="Fill" />
-                    <StackPanel
-                        Grid.Column="1"
-                        Margin="8,0,0,8"
-                        Spacing="4">
-                        <TextBlock
-                            Margin="0,0,0,8"
-                            Style="{ThemeResource SubtitleTextBlockStyle}"
-                            Text="{x:Bind Title}" />
-                        <StackPanel Orientation="Horizontal" Spacing="4">
+    <Grid>
+        <AnimatedVisualPlayer
+            x:Name="Player"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            AutoPlay="True"
+            Canvas.ZIndex="2"
+            Visibility="{x:Bind LibraryViewModel.AnyBooks, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+            <animatedvisuals:DancingBook />
+        </AnimatedVisualPlayer>
+        <GridView
+            x:Name="ContentGridView"
+            animations:ItemsReorderAnimation.Duration="00:00:00.4000000"
+            AllowDrop="True"
+            CanDragItems="True"
+            CanReorderItems="True"
+            IsItemClickEnabled="True"
+            ItemClick="ContentGridView_ItemClick"
+            ItemsSource="{x:Bind LibraryViewModel.Books, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+            SelectionMode="None">
+            <GridView.Resources>
+                <helpers:BindingProxy x:Key="Proxy" Data="{x:Bind LibraryViewModel}" />
+            </GridView.Resources>
+            <GridView.ItemTemplate>
+                <DataTemplate x:DataType="models:FullBookModel">
+                    <Grid
+                        Width="280"
+                        Margin="5"
+                        AutomationProperties.Name="{x:Bind Title}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Image
+                            x:Name="connectedElement"
+                            Height="180"
+                            MaxWidth="120"
+                            VerticalAlignment="Top"
+                            Source="{x:Bind ImageSource}"
+                            Stretch="Fill" />
+                        <StackPanel
+                            Grid.Column="1"
+                            Margin="8,0,0,8"
+                            Spacing="4">
                             <TextBlock
-                                FontWeight="Medium"
-                                Style="{ThemeResource CaptionTextBlockStyle}"
-                                Text="Author:" />
-                            <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind Author}" />
+                                Margin="0,0,0,8"
+                                Style="{ThemeResource SubtitleTextBlockStyle}"
+                                Text="{x:Bind Title}" />
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock
+                                    FontWeight="Medium"
+                                    Style="{ThemeResource CaptionTextBlockStyle}"
+                                    Text="Author:" />
+                                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind Author}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock
+                                    FontWeight="Medium"
+                                    Style="{ThemeResource CaptionTextBlockStyle}"
+                                    Text="Language:" />
+                                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind Language}" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                <TextBlock
+                                    FontWeight="Medium"
+                                    Style="{ThemeResource CaptionTextBlockStyle}"
+                                    Text="Publish Year:" />
+                                <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind PublishYear}" />
+                            </StackPanel>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock
-                                FontWeight="Medium"
-                                Style="{ThemeResource CaptionTextBlockStyle}"
-                                Text="Language:" />
-                            <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind Language}" />
+                        <Grid.ContextFlyout>
+                            <CommandBarFlyout>
+                                <AppBarButton
+                                    Command="{Binding Data.DeleteCommand, Source={StaticResource Proxy}}"
+                                    CommandParameter="{x:Bind ID}"
+                                    Icon="Delete"
+                                    Label="Delete"
+                                    ToolTipService.ToolTip="Delete" />
+                                <AppBarButton
+                                    Command="{Binding Data.UpdateCommand, Source={StaticResource Proxy}}"
+                                    CommandParameter="{x:Bind ID}"
+                                    Icon="Edit"
+                                    Label="Edit"
+                                    ToolTipService.ToolTip="Edit" />
+                            </CommandBarFlyout>
+                        </Grid.ContextFlyout>
+                    </Grid>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+            <GridView.Footer>
+                <Button
+                    x:Name="AddNewBookButton"
+                    Command="{x:Bind LibraryViewModel.AddNewBookCommand}"
+                    PointerEntered="Element_PointerEntered"
+                    PointerExited="Element_PointerExited">
+                    <Button.Content>
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <TextBlock VerticalAlignment="Center" Text="Add New Book" />
+                            <SymbolIcon VerticalAlignment="Center" Symbol="Add" />
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Spacing="4">
-                            <TextBlock
-                                FontWeight="Medium"
-                                Style="{ThemeResource CaptionTextBlockStyle}"
-                                Text="Publish Date:" />
-                            <TextBlock Style="{ThemeResource CaptionTextBlockStyle}" Text="{x:Bind GetFormatedPublicationDate()}" />
-                        </StackPanel>
-                    </StackPanel>
-                </Grid>
-            </DataTemplate>
+                    </Button.Content>
+                </Button>
+            </GridView.Footer>
+        </GridView>
+    </Grid>
 
-        </GridView.ItemTemplate>
-    </GridView>
 </Page>

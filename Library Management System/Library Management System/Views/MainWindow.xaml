@@ -15,7 +15,7 @@
         <Border
             x:Name="AppTitleBar"
             Height="48"
-            Margin="5,0,0,0"
+            Margin="5,-10,0,0"
             VerticalAlignment="Top"
             Background="Transparent"
             Canvas.ZIndex="1"
@@ -39,7 +39,6 @@
             AlwaysShowHeader="True"
             Canvas.ZIndex="0"
             ExpandedModeThresholdWidth="500"
-            Header="Header"
             IsBackButtonVisible="Collapsed"
             IsBackEnabled="False"
             IsPaneToggleButtonVisible="True"
@@ -51,9 +50,9 @@
 
             <NavigationView.MenuItems>
                 <NavigationViewItem
-                    Content="Dashboard"
+                    Content="Home"
                     Icon="Home"
-                    Tag="Dashboard" />
+                    Tag="Home" />
                 <NavigationViewItemHeader Content="Pages" />
                 <NavigationViewItem
                     Content="Library"

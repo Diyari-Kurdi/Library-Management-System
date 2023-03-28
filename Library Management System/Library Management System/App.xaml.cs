@@ -27,7 +27,22 @@ public partial class App : Application
             services.AddSingleton<MainViewModel>();
 
             services.AddSingleton<LibraryView>();
-            services.AddSingleton<LibraryViewModel>();
+            services.AddTransient<LibraryViewModel>();
+
+            services.AddTransient<AddBookView>();
+            services.AddSingleton<AddBookViewModel>();
+
+            services.AddSingleton<AuthorsView>();
+            services.AddTransient<AuthorsViewModel>();
+
+            services.AddTransient<AddAuthorView>();
+            services.AddSingleton<AddAuthorViewModel>();
+
+            services.AddSingleton<CategoriesView>();
+            services.AddTransient<CategoriesViewModel>();
+
+            services.AddTransient<AddCategoryView>();
+            services.AddSingleton<AddCategoryViewModel>();
 
             services.AddSingleton<IMessenger, WeakReferenceMessenger>();
         }).Build();

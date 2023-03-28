@@ -1,6 +1,5 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Animation;
 using Microsoft.UI.Xaml.Navigation;
 
@@ -8,7 +7,7 @@ namespace Library_Management_System.Views.MainViews;
 
 public sealed partial class DetailedInfoPage : Page
 {
-    public BookModel? DetailedObject { get; set; }
+    public FullBookModel? DetailedObject { get; set; }
     public DetailedInfoPage()
     {
         this.InitializeComponent();
@@ -24,7 +23,7 @@ public sealed partial class DetailedInfoPage : Page
     {
         base.OnNavigatedTo(e);
 
-        DetailedObject = (BookModel)e.Parameter;
+        DetailedObject = (FullBookModel)e.Parameter;
         ConnectedAnimation imageAnimation = ConnectedAnimationService.GetForCurrentView().GetAnimation("ForwardConnectedAnimation");
         imageAnimation?.TryStart(detailedImage, new UIElement[] { coordinatedPanel });
     }
