@@ -60,7 +60,7 @@ public partial class App : Application
             m_window = AppHost.Services.GetRequiredService<SetupWindow>();
         else
         {
-#if DEBUG
+#if !DEBUG
             m_window = AppHost.Services.GetRequiredService<MainWindow>();
 #else
             m_window = AppHost.Services.GetRequiredService<LoginWindow>();

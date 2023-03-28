@@ -1,7 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
-using Library_Management_System.Configuration;
-using Library_Management_System.Records;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
@@ -26,9 +24,9 @@ public partial class AccountSetupViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(CreateAccountCommand))]
     private string _confirmPassword = string.Empty;
 
-    private string _pPic { get; set; } = "https://free4kwallpapers.com/uploads/originals/2019/05/08/beautiful-landscape-wallpaper.jpg";
+    private string _pPic { get; set; } = "ms-appx:///Resources/Images/Avatar.png";
     [ObservableProperty]
-    private ImageSource _profilePicture = new BitmapImage(new System.Uri("https://free4kwallpapers.com/uploads/originals/2019/05/08/beautiful-landscape-wallpaper.jpg"));
+    private ImageSource _profilePicture = new BitmapImage(new System.Uri("ms-appx:///Resources/Images/Avatar.png"));
 
     private bool CanCreateAccount()
     {
@@ -67,7 +65,7 @@ public partial class AccountSetupViewModel : ObservableObject
                     new()
                     {
                         Name = "Username",
-                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.NVARCHAR,14),
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.NVARCHAR,45),
                         IsNullable = false,
                         IsUnique = true
                     },
@@ -85,9 +83,152 @@ public partial class AccountSetupViewModel : ObservableObject
                     }
                 },
             },
+            new()
+            {
+                Name = nameof(Table.categories),
+                Columns = new ColumnModel[]
+                {
+                    new()
+                    {
+                        Name = "ID",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.INT),
+                        IsAutoIncrament= true,
+                        IsNullable = false,
+                        IsPrimaryKey = true
+                    },
+                    new()
+                    {
+                        Name = "Genre",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.NVARCHAR,45),
+                        IsNullable = false,
+                        IsUnique = true
+                    },
+                    new()
+                    {
+                        Name = "Description",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.TEXT),
+                        IsNullable = true,
+                    }
+                },
+            },
+            new()
+            {
+                Name = nameof(Table.authors),
+                Columns = new ColumnModel[]
+                {
+                    new()
+                    {
+                        Name = "ID",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.INT),
+                        IsAutoIncrament= true,
+                        IsNullable = false,
+                        IsPrimaryKey = true
+                    },
+                    new()
+                    {
+                        Name = "FullName",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.NVARCHAR,45),
+                        IsNullable = false
+                    },
+                    new()
+                    {
+                        Name = "Picture",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.TEXT),
+                    },
+                    new()
+                    {
+                        Name = "Birthday",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.DATETIME),
+                    },
+                    new()
+                    {
+                        Name = "BirthPlace",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.VARCHAR,45),
+                    },
+                    new()
+                    {
+                        Name = "Description",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.TEXT),
+                    },
+                },
+            },
+            new()
+            {
+                Name = nameof(Table.books),
+                Columns = new ColumnModel[]
+                {
+                    new()
+                    {
+                        Name = "ID",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.INT),
+                        IsAutoIncrament= true,
+                        IsNullable = false,
+                        IsPrimaryKey = true
+                    },
+                    new()
+                    {
+                        Name = "Title",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.TEXT),
+                        IsNullable = false
+                    },
+                    new()
+                    {
+                        Name = "Picture",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.TEXT),
+                    },
+                    new()
+                    {
+                        Name = "Summary",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.TEXT),
+                    },
+                    new()
+                    {
+                        Name = "Language",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.VARCHAR,18),
+                    },
+                    new()
+                    {
+                        Name = "Pages",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.INT),
+                    },
+                    new()
+                    {
+                        Name = "AuthorID",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.INT),
+                        IsNullable = false,
+                        HasForeignKey = true,
+                        ReferenceFromTable = Table.authors,
+                        ReferenceFromColumn = "ID"
+                    },
+                    new()
+                    {
+                        Name = "PublishYear",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.INT),
+                    },
+                    new()
+                    {
+                        Name = "Edition",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.VARCHAR,45),
+                    },
+                    new()
+                    {
+                        Name = "GenreID",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.INT),
+                        IsNullable = false,
+                        HasForeignKey = true,
+                        ReferenceFromTable = Table.categories,
+                        ReferenceFromColumn = "ID"
+                    },
+                    new()
+                    {
+                        Name = "Price",
+                        DataType = SqlDataTypeConverter.GetDataType(SqlDataType.DECIMAL,"10,0"),
+                    },
+                },
+            }
         };
         var result = await ServerSetupService.SetupServerAsync(tables, userModel, InfoDeliveryService.CurrentInfoBar);
-        if (result) 
+        if (result)
         {
             ApplicationSettings.Settings.DatabaseName = TempData.ServerModel!.DatabaseName;
             ApplicationSettings.Settings.ConnectionString = TempData.ServerModel.ConnectionString;
@@ -101,7 +242,7 @@ public partial class AccountSetupViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private static void GoBack() 
+    private static void GoBack()
     {
         WeakReferenceMessenger.Default.Send(new MessageRecord(MessageResult.GoBack));
     }

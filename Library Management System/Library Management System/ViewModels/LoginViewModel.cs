@@ -30,7 +30,7 @@ public partial class LoginViewModel : ObservableObject
     [NotifyCanExecuteChangedFor(nameof(LoginCommand))]
     private string _password = string.Empty;
     [ObservableProperty]
-    private static ImageSource _profilePicture = new BitmapImage(new Uri("ms-appx:///Resources/unknownperson.png"));
+    private static ImageSource _profilePicture = new BitmapImage(new Uri("ms-appx:///Resources/Images/Avatar.png"));
 
 
     [RelayCommand]

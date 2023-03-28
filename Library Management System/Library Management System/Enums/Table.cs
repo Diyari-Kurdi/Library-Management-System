@@ -6,5 +6,4 @@ public enum Table
     books,
     authors,
     categories,
-    author_books
 }
