@@ -47,7 +47,7 @@ public partial class App : Application
     public static Window m_window = null!;
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
-#if !DEBUG
+#if DEBUG
         m_window = AppHost.Services.GetRequiredService<MainWindow>();
 #else
         m_window = AppHost.Services.GetRequiredService<StartupWindow>();

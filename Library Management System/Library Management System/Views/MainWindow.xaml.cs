@@ -6,10 +6,8 @@ namespace Library_Management_System.Views
 {
     public sealed partial class MainWindow : Window
     {
-        public MainViewModel MainViewModel { get; }
         public MainWindow()
         {
-            MainViewModel = App.AppHost.Services.GetRequiredService<MainViewModel>();
             this.InitializeComponent();
             ExtendsContentIntoTitleBar = true;
             Title = "Library Management System";
