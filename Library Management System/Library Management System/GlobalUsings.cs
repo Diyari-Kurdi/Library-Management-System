@@ -6,7 +6,6 @@ global using Library_Management_System.Enums;
 global using Library_Management_System.Interfaces;
 global using Library_Management_System.Models;
 global using Library_Management_System.Models.Database;
-global using Library_Management_System.Temp;
 global using Library_Management_System.Services;
 global using Library_Management_System.ViewModels.StartupViewModels;
 global using Library_Management_System.Views.StartupViews;

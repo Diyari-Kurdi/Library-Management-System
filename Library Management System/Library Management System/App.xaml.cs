@@ -20,7 +20,6 @@ public partial class App : Application
             services.AddSingleton<LoginViewModel>();
 
             services.AddSingleton<MainWindow>();
-            services.AddSingleton<MainViewModel>();
 
             services.AddSingleton<LibraryView>();
             services.AddTransient<LibraryViewModel>();
